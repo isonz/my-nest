@@ -1,12 +1,23 @@
-import { Controller, Get, Post, Req, Res, HttpStatus, Body } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, HttpStatus, Body, Put, Delete, UseFilters } from "@nestjs/common";
 import { Request, Response } from 'express';
 import { HttpCode, Header, Redirect, Query, Param, HttpException } from '@nestjs/common';
+import { CreateCatDto } from './create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
+import { ForbiddenException } from "../common/exception/forbidden.exception";
+import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
+
 
 @Controller('cats')
+// @UseFilters(new HttpExceptionFilter())   //整个控制器上定义异常格式
 export class CatsController {
+
+  constructor(private readonly catsService: CatsService) {
+  }
+
   @Get()
   index(@Req() request: Request): string {
-    return 'This is Cats index.';
+    return 'This is Cats index.' + request.ip;
   }
 
   @Get('news')
@@ -59,6 +70,8 @@ export class CatsController {
     res.status(HttpStatus.OK).json([]);
   }
 
+
+
   @Get('body')
   async body(@Body() s: string) {
     // return 'This is a body request.';
@@ -67,6 +80,63 @@ export class CatsController {
       status: HttpStatus.FORBIDDEN,
       error: 'This is a custom message',
     }, 403);
+  }
+
+  @Get('faex')
+  async findAllException() {
+    throw new ForbiddenException();
+  }
+
+  @Post('create_hef')
+  // @UseFilters(new HttpExceptionFilter())
+  @UseFilters(HttpExceptionFilter)
+  async create_hef(@Body() createCatDto: CreateCatDto) {
+    throw new ForbiddenException();
+  }
+
+
+
+
+  @Get('async')
+  async asyncFindAll(): Promise<any[]> {
+    return [];
+  }
+
+  @Post('create_dto')
+  async create_dto(@Body() createCatDto: CreateCatDto) {
+    return createCatDto;
+  }
+
+  @Get()
+  findAll3(@Query() query: CreateCatDto) {
+    return `This action returns all cats (limit: ${query.age} items)`;
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return `This action returns a #${id} cat`;
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateCatDto: CreateCatDto) {
+    return `This action updates a #${id} cat`;
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return `This action removes a #${id} cat`;
+  }
+
+
+
+  @Post('add')
+  async creates(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
+
+  @Get('all')
+  async findAlls(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
 }
