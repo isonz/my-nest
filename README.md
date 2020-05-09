@@ -5,8 +5,8 @@ nest new my-nest
 npm run start:debug
 
 
-nest g controller cats
 nest g module cats
+nest g controller cats
 nest g service cats 
 
 
@@ -14,6 +14,17 @@ http://localhost:3000/
 
 
 npm i --save-dev @nestjs/testing
+
+
+npm install --save @nestjs/passport passport passport-local
+npm install --save-dev @types/passport-local
+
+
+npm install @nestjs/jwt passport-jwt
+npm install @types/passport-jwt --save-dev
+
+
+
 ```
 
 
