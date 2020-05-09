@@ -1,6 +1,6 @@
 import { Global, Module } from "@nestjs/common";
 import { CatsController } from './cats.controller';
-import { CatsService } from './cats.service';
+import { CatsService } from './service/cats.service';
 import { APP_FILTER } from "@nestjs/core";
 import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
 
@@ -14,6 +14,7 @@ import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
     // {
     //   provide: APP_FILTER,
     //   useClass: HttpExceptionFilter,
+    //   useClass: ValidationPipe
     // }
   ]
 })

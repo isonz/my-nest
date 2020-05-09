@@ -1,11 +1,34 @@
-import { Controller, Get, Post, Req, Res, HttpStatus, Body, Put, Delete, UseFilters } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  HttpStatus,
+  Body,
+  Put,
+  Delete,
+  UseFilters,
+  UsePipes,
+  UseGuards,
+  SetMetadata,
+  UseInterceptors
+} from "@nestjs/common";
 import { Request, Response } from 'express';
 import { HttpCode, Header, Redirect, Query, Param, HttpException } from '@nestjs/common';
 import { CreateCatDto } from './create-cat.dto';
-import { CatsService } from './cats.service';
+import { CatsService } from './service/cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { ForbiddenException } from "../common/exception/forbidden.exception";
 import { HttpExceptionFilter } from "../common/exception/http-exception.filter";
+import { JoiValidationPipe } from "../common/pipe/JoiValidationPipe";
+import { createCatSchema } from "./create-cat.schema";
+import { ValidationPipe } from "../common/pipe/validation.pipe";
+import { RolesGuard } from "../common/guard/roles.guard";
+import { Roles } from "../common/guard/roles.decorator";
+import { LoggingInterceptor } from "../common/interceptor/logging.interceptor";
+import { User } from "../common/decorator/user.decorator";
+import { UserEntity } from "./entity/user.entity";
 
 
 @Controller('cats')
@@ -21,11 +44,13 @@ export class CatsController {
   }
 
   @Get('news')
+  @UseGuards(RolesGuard)
   news(): string {
     return 'This is Cats news.';
   }
 
   @Get('a*d')
+  @UseInterceptors(LoggingInterceptor)
   findAll(): string {
     return 'This route uses a wildcard';
   }
@@ -94,6 +119,12 @@ export class CatsController {
     throw new ForbiddenException();
   }
 
+  @Post('create_roles')
+  // @SetMetadata('roles', ['admin'])
+  @Roles('admin')
+  async create_roles(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
 
 
 
@@ -103,9 +134,33 @@ export class CatsController {
   }
 
   @Post('create_dto')
+  @UsePipes(new JoiValidationPipe(createCatSchema))
   async create_dto(@Body() createCatDto: CreateCatDto) {
-    return createCatDto;
+    return this.catsService.create(createCatDto);
   }
+
+  @Post('create_pipes')
+  //@UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
+  async create_pipes(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
+
+  @Get('find_on_user')
+  async findOneUser(@User() user: UserEntity) {
+    console.log(user);
+  }
+
+  @Get('find_user_name')
+  async findOneByName(@User('name') name: string) {
+    console.log(`Hello ${name}`);
+  }
+
+  @Get('find_pip_user')
+  async findOnePipUser(@User(new ValidationPipe()) user: UserEntity) {
+    console.log(user);
+  }
+
 
   @Get()
   findAll3(@Query() query: CreateCatDto) {

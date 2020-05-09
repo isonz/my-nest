@@ -1,6 +1,6 @@
 import { IsString, IsInt } from 'class-validator';
 
-export class CreateCatDto {
+export class UserEntity {
 
   @IsString()
   readonly name: string;

@@ -2,7 +2,7 @@
 npm i -g @nestjs/cli
 nest new my-nest
 
-npm run start
+npm run start:debug
 
 
 nest g controller cats
@@ -10,8 +10,10 @@ nest g module cats
 nest g service cats 
 
 
-
 http://localhost:3000/
+
+
+npm i --save-dev @nestjs/testing
 ```
 
 
