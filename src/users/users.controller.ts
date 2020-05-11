@@ -1,4 +1,4 @@
-import { Controller, Request, Post, UseGuards, Get } from "@nestjs/common";
+import { Controller, Request, Post, UseGuards, Get, Req } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "../auth/auth.service";
 import { LocalAuthGuard } from "../auth/guards/local-auth.guard";
@@ -9,21 +9,34 @@ export class UsersController {
 
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(AuthGuard('local'))
-  @Post('login-1')
-  async login_1(@Request() req) {
-    return this.authService.login(req.user);
+  @Get()
+  index(): string {
+    return 'This is Cats index.';
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login-2')
-  async login_2(@Request() req) {
-    return this.authService.login(req.user);
+  // @UseGuards(AuthGuard('local'))
+  // @Post('login1')
+  // async login_1(@Request() req) {
+  //   return this.authService.login(req.user);
+  // }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('profile1')
+  getProfile1(@Request() req) {
+    return req.user;
   }
+
+
+
+  // @UseGuards(LocalAuthGuard)
+  //   // @Post('login2')
+  //   // async login_2(@Request() req) {
+  //   //   return this.authService.login(req.user);
+  //   // }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
+  @Get('profile2')
+  getProfile2(@Request() req) {
     return req.user;
   }
 
