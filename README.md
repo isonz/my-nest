@@ -24,6 +24,7 @@ npm install @nestjs/jwt passport-jwt
 npm install @types/passport-jwt --save-dev
 
 
+npm install --save js-sha256
 
 ```
 
